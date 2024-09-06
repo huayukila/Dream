@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4eded397317a6dd41a2c3a59f3ba3e78, type: 3}
+  m_Name: ItemConfigDatabase
+  m_EditorClassIdentifier: 
+  ItemConfigObjs:
+  - UID: 1001
+    Name: Boom
+    Type: 1000
+    Price: 2000
+    IsCanStack: 1
+    MaxStackNums: 3
+    UIImage: {fileID: 21300000, guid: 76057d2beb7e5444ca430ac1258a72fe, type: 3}
+    Description: "\u3053\u308C\u306F\u7206\u5F3E\u3001\u3054\u6CE8\u610F\u3057\u3066\u304F\u3060\u3055\u3044"
+    Model: {fileID: 3968899203991606555, guid: 20a9a2690fa42404583252e163d123b9, type: 3}
+  - UID: 1002
+    Name: Banana
+    Type: 1000
+    Price: 100
+    IsCanStack: 1
+    MaxStackNums: 10
+    UIImage: {fileID: 21300000, guid: 0509365ee5f05e54ba2a8db275fc1c0d, type: 3}
+    Description: "\u3059\u3054\u304F\u7F8E\u5473\u3057\u3044"
+    Model: {fileID: 3968899203991606555, guid: 20a9a2690fa42404583252e163d123b9, type: 3}

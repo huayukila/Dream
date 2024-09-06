@@ -1,42 +1,37 @@
-using System.Collections;
 using System.Collections.Generic;
-using Framework;
 using UnityEngine;
 
-public class SlotsUIManager : ProjectCtrler
+namespace Framework.Farm
 {
-    public GameObject SlotUIPre;
-    private List<SlotUI> slotUIs = new List<SlotUI>();
-    private IPlayerModel _playerModel;
-
-    private void Start()
+    public class SlotsUIManager : ProjectCtrler
     {
-        _playerModel = this.GetModel<IPlayerModel>();
-        for (int i = 0; i < _playerModel.BackPack.Slots.Length; ++i)
+        public GameObject SlotUIPre;
+        private List<SlotUI> slotUIs = new List<SlotUI>();
+        private IPlayerModel _playerModel;
+
+        private void Awake()
         {
-            GameObject obj = Instantiate(SlotUIPre, Vector3.zero, Quaternion.identity, transform);
-            SlotUI ui = obj.GetComponent<SlotUI>();
-            ui.NameTxt.text = "null";
-            ui.NumsTxt.text = "";
-            slotUIs.Add(ui);
+            _playerModel = this.GetModel<IPlayerModel>();
+            for (int i = 0; i < _playerModel.BackPack.Slots.Length; ++i)
+            {
+                GameObject obj = Instantiate(SlotUIPre, Vector3.zero, Quaternion.identity, transform);
+                SlotUI ui = obj.GetComponent<SlotUI>();
+                ui.InitWithData(_playerModel.BackPack.Slots[i]);
+                slotUIs.Add(ui);
+            }
         }
 
-        UpdateSlots();
-    }
-
-    public void UpdateSlots()
-    {
-        for (int i = 0; i < _playerModel.BackPack.Slots.Length; ++i)
+        private void Start()
         {
-            if (_playerModel.BackPack.Slots[i].Item == null)
-            {
-                slotUIs[i].NameTxt.text = "null";
-                slotUIs[i].NumsTxt.text = "";
-                continue;
-            }
+            this.RegisterEvent<BoughtItemEvent>(e => { UpdateSlots(); }).UnregisterWhenGameObjectDestroyed(gameObject);
+        }
 
-            slotUIs[i].NameTxt.text = _playerModel.BackPack.Slots[i].Item.Name;
-            slotUIs[i].NumsTxt.text = _playerModel.BackPack.Slots[i].Nums.ToString();
+        public void UpdateSlots()
+        {
+            for (int i = 0; i < _playerModel.BackPack.Slots.Length; ++i)
+            {
+                slotUIs[i].UpdateSlotUI();
+            }
         }
     }
 }

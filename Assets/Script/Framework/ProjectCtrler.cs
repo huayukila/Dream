@@ -1,10 +1,13 @@
 using Framework;
 using UnityEngine;
 
-public class ProjectCtrler : MonoBehaviour, IController
+namespace Framework.Farm
 {
-    public IArchitecture GetArchitecture()
+    public class ProjectCtrler : MonoBehaviour, IController
     {
-        return Architecture<DreamsFarmProject>.Interface;
+        public IArchitecture GetArchitecture()
+        {
+            return Architecture<DreamsFarmProject>.Interface;
+        }
     }
 }

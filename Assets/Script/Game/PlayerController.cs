@@ -1,65 +1,34 @@
 using UnityEngine;
 
-namespace Framework
+namespace Framework.Farm
 {
     public class PlayerController : ProjectCtrler
     {
+        public float Speed;
         public SlotsUIManager SlotsUIManager;
 
         private IPlayerModel _playerModel;
-        private IStorageSystem _storageSystem;
+        private IInventorySystem _inventorySystem;
+        private float h, v;
+        private Transform mainCam;
 
         private void Start()
         {
+            mainCam = Camera.main.transform;
             _playerModel = this.GetModel<IPlayerModel>();
-            _storageSystem = this.GetSystem<IStorageSystem>();
+            _inventorySystem = this.GetSystem<IInventorySystem>();
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                _storageSystem.AddItemToStorageUnit(new StorageUpdateInfo()
-                {
-                    Item = new Item(01, "boom", 100),
-                    TargetUnit = _playerModel.BackPack,
-                    Nums = 80
-                });
-                SlotsUIManager.UpdateSlots();
-            }
+            h = Input.GetAxis("Horizontal");
+            v = Input.GetAxis("Vertical");
+        }
 
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                _storageSystem.AddItemToStorageUnit(new StorageUpdateInfo()
-                {
-                    Item = new Item(02, "ass", 100),
-                    TargetUnit = _playerModel.BackPack,
-                    Nums = 20
-                });
-                SlotsUIManager.UpdateSlots();
-            }
-
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-                _storageSystem.RemoveItemFromStorageUnit(new StorageUpdateInfo()
-                {
-                    Item = new Item(02, "ass", 100),
-                    TargetUnit = _playerModel.BackPack,
-                    Nums = 10
-                });
-                SlotsUIManager.UpdateSlots();
-            }
-
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                _storageSystem.RemoveItemFromStorageUnit(new StorageUpdateInfo()
-                {
-                    Item = new Item(01, "boom", 100),
-                    TargetUnit = _playerModel.BackPack,
-                    Nums = 20
-                });
-                SlotsUIManager.UpdateSlots();
-            }
+        private void FixedUpdate()
+        {
+            Vector3 temp = h * mainCam.right + v * mainCam.forward;
+            transform.position += temp * Speed;
         }
     }
 }
