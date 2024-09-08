@@ -23,12 +23,14 @@ namespace Framework.Farm
         {
             h = Input.GetAxis("Horizontal");
             v = Input.GetAxis("Vertical");
+
+            Vector3 temp = h * mainCam.right + v * mainCam.forward;
+            transform.position += temp * Speed * Time.deltaTime;
         }
 
-        private void FixedUpdate()
+        public void Save()
         {
-            Vector3 temp = h * mainCam.right + v * mainCam.forward;
-            transform.position += temp * Speed;
+            this.GetSystem<ISaveSystem>().Save();
         }
     }
 }

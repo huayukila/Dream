@@ -17,12 +17,16 @@ namespace Framework.Farm
         int GetSameItemSumFromSlotsByItemID(List<ISlot> slots, int ItemID);
 
         void DragItemToSlot(SlotUI handlingSlotUI, SlotUI targetSlotUI);
+
+        void LoadUnitFromSaveData(List<StorageUnitData> datas);
+
+        Dictionary<int, InventoryUnit> _unitsGroup { get; }
     }
 
     public class InventorySystem : AbstractSystem, IInventorySystem
     {
         private IItemConfigModel _itemConfigModel;
-        private Dictionary<int, InventoryUnit> _unitsGroup = new Dictionary<int, InventoryUnit>();
+        public Dictionary<int, InventoryUnit> _unitsGroup { get; } = new Dictionary<int, InventoryUnit>() { };
         List<ISlot> canStackSlots = new List<ISlot>();
 
         protected override void OnInit()
@@ -30,15 +34,7 @@ namespace Framework.Farm
             {
                 //セーフデータから初期化
                 //todo...
-                var backPack = this.GetModel<IPlayerModel>().BackPack;
                 _itemConfigModel = this.GetModel<IItemConfigModel>();
-
-                //模擬
-                var itemConfigObj = _itemConfigModel.GetConfigByID(1001);
-                CreateItemByIndex(backPack, itemConfigObj, 1, 0);
-
-                UpdateUnitNullSlotsList(backPack);
-                _unitsGroup.Add(backPack.Index, backPack);
             }
         }
 
@@ -151,15 +147,27 @@ namespace Framework.Farm
                 handlingSlotUI.Data.Nums = cachedItemNums;
                 handlingSlotUI.Data.Item = tempItem;
             }
-            // if (handlingSlotUI.Data.ParentInventoryUnit != targetSlotUI.Data.ParentInventoryUnit)
-            // {
-            //     var cachedUnit = targetSlotUI.Data.ParentInventoryUnit;
-            //     targetSlotUI.Data.ChangeParentInventoryUnit(handlingSlotUI.Data.ParentInventoryUnit);
-            //     handlingSlotUI.Data.ChangeParentInventoryUnit(cachedUnit);
-            //     UpdateUnitNullSlotsList(targetSlotUI.Data.ParentInventoryUnit);
-            // }
 
             UpdateUnitNullSlotsList(handlingSlotUI.Data.ParentInventoryUnit);
+        }
+
+        public void LoadUnitFromSaveData(List<StorageUnitData> datas)
+        {
+            foreach (var data in datas)
+            {
+                var unit = InventoryUnit.CreateStorageUnit(data.size);
+                for (int i = 0; i < data.size; i++)
+                {
+                    var slot = unit.Slots[i];
+                    var slotData = data.slots[i];
+                    CreateItemByIndex(unit, _itemConfigModel.GetConfigByID(slotData.id), slotData.amount, i);
+                }
+
+                UpdateUnitNullSlotsList(unit);
+                _unitsGroup.Add(data.index, unit);
+            }
+
+            this.GetModel<IPlayerModel>().InitBackPack(_unitsGroup[1]);
         }
 
         #region 内部用
@@ -285,6 +293,8 @@ namespace Framework.Farm
 
         void CreateItemByIndex(InventoryUnit unit, ItemConfigObj obj, int amount = 1, int index = 0)
         {
+            if (unit.Slots[index].Item != null)
+                return;
             unit.Slots[index].Item = new Item(obj);
             unit.Slots[index].Nums = amount;
         }

@@ -12,7 +12,7 @@ namespace Framework.Farm
         private void Awake()
         {
             _playerModel = this.GetModel<IPlayerModel>();
-            for (int i = 0; i < _playerModel.BackPack.Slots.Length; ++i)
+            for (int i = 0; i < _playerModel.BackPack.Slots.Count; ++i)
             {
                 GameObject obj = Instantiate(SlotUIPre, Vector3.zero, Quaternion.identity, transform);
                 SlotUI ui = obj.GetComponent<SlotUI>();
@@ -28,7 +28,7 @@ namespace Framework.Farm
 
         public void UpdateSlots()
         {
-            for (int i = 0; i < _playerModel.BackPack.Slots.Length; ++i)
+            for (int i = 0; i < _playerModel.BackPack.Slots.Count; ++i)
             {
                 slotUIs[i].UpdateSlotUI();
             }

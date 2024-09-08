@@ -2,7 +2,12 @@ using UnityEngine;
 
 namespace Framework.Farm
 {
-    public class CameraController : MonoBehaviour
+    public interface ICameraControllerSetting
+    {
+        ICameraControllerSetting SetFov(float value);
+    }
+    
+    public class CameraController : MonoBehaviour, ICameraControllerSetting
     {
         public Transform TargetTrans;
 
@@ -16,53 +21,55 @@ namespace Framework.Farm
 
         public float VSpeed;
 
-        public bool isTest = false;
+        private Vector3 fstVec;
 
-        private Vector3 rightVec, upVec, backVec;
-
-        private float angle;
-
-        private Vector3 targetToCamDir;
+        private Camera cam;
 
         // Start is called before the first frame update
         void Start()
         {
-            
-            rightVec = -Vector3.left * RightOffset;
-            upVec = Vector3.up * UpOffset;
-            backVec = -Vector3.forward * BackOffset;
+            cam = GetComponent<Camera>();
+            fstVec = TargetTrans.right * RightOffset;
 
-            angle = Vector3.Angle(rightVec + backVec, backVec);
-            Vector3 temp = new Vector3(transform.position.x, 0, transform.position.z);
-            targetToCamDir = temp - TargetTrans.position;
-            Init();
-        }
+            Vector3 secVec = Quaternion.Euler(0, 90, 0) * fstVec.normalized * BackOffset;
 
-        void Init()
-        {
-            transform.position = TargetTrans.position + rightVec + upVec + backVec;
-            transform.rotation = TargetTrans.rotation;
+            Vector3 trdVec = TargetTrans.up * UpOffset;
+
+            transform.position = TargetTrans.position + fstVec + secVec + trdVec;
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (isTest)
-            {
-                Init();
-            }
-
+            fstVec = fstVec.normalized * RightOffset;
             float horizontal = Input.GetAxis("Mouse X");
             if (Mathf.Abs(horizontal) > 0.01f)
             {
-                targetToCamDir = Quaternion.Euler(0, horizontal * HSpeed, 0) * targetToCamDir;
+                fstVec = Quaternion.Euler(0, horizontal * HSpeed, 0) * fstVec;
             }
         }
 
         private void LateUpdate()
         {
-            transform.position = TargetTrans.position + targetToCamDir + upVec;
-            transform.rotation = Quaternion.LookRotation(Quaternion.Euler(0, angle, 0) * (-targetToCamDir));
+            Vector3 secVec = Quaternion.Euler(0, 90, 0) * fstVec.normalized * BackOffset;
+
+            Vector3 trdVec = TargetTrans.up * UpOffset;
+
+            Vector3 temp = TargetTrans.position + fstVec + secVec + trdVec;
+
+            transform.position = Vector3.Lerp(temp, transform.position, 0.1f);
+            transform.rotation = Quaternion.LookRotation(-new Vector3(secVec.x, 0, secVec.z));
+        }
+
+        public ICameraControllerSetting SetFov(float value)
+        {
+            if (value is > 110 or < 0)
+            {
+                Debug.Log("Fov should between 0-110");
+            }
+
+            cam.fieldOfView = Mathf.Clamp(value, 0, 110);
+            return this;
         }
     }
 }

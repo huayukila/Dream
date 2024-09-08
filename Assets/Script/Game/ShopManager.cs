@@ -29,7 +29,7 @@ namespace Framework.Farm
             shopUnit.Slots[3].Item = new Item(itemConfig2);
             shopUnit.Slots[3].Nums = 60;
 
-            for (int i = 0; i < shopUnit.Slots.Length; i++)
+            for (int i = 0; i < shopUnit.Slots.Count; i++)
             {
                 if (shopUnit.Slots[i].Item == null)
                     break;

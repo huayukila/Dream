@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 public struct InventoryUpdateInfo
 {
     public int ItemId;
@@ -12,11 +13,12 @@ public struct InventoryUpdateResult
     public int ItemID;
     public int Nums;
 }
+
 public interface IInventoryUnit
 {
     int Index { get; }
     int UnitSize { get; }
-    ISlot[] Slots { get; }
+    List<ISlot> Slots { get; }
     List<ISlot> NullSlots { get; }
 }
 
@@ -25,7 +27,7 @@ public class InventoryUnit : IInventoryUnit
     private static int INDEX = 1;
     public int Index { get; private set; }
     public int UnitSize { get; }
-    public ISlot[] Slots { get; }
+    public List<ISlot> Slots { get; }
     public List<ISlot> NullSlots { get; set; }
 
     public static InventoryUnit CreateStorageUnit(int maxSize, out int index)
@@ -57,10 +59,10 @@ public class InventoryUnit : IInventoryUnit
     {
         NullSlots = new List<ISlot>();
         UnitSize = maxSize;
-        Slots = new ISlot[maxSize];
-        for (int i = 0; i < Slots.Length; i++)
+        Slots = new List<ISlot>();
+        for (int i = 0; i < maxSize; i++)
         {
-            Slots[i] = new Slot(this);
+            Slots.Add(new Slot(this));
         }
     }
 }

@@ -29,12 +29,6 @@ public class Slot : ISlot
             }
         }
     }
-
-    // public void InitItem(ItemConfigObj config)
-    // {
-    //     Item ??= new Item(config);
-    // }
-
     public void ChangeParentInventoryUnit(IInventoryUnit unit)
     {
         ParentInventoryUnit = unit;
