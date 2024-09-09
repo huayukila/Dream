@@ -1,6 +1,3 @@
-using Unity.VisualScripting;
-using UnityEngine;
-
 public class UIKit
 {
     private static UIMgr _mgr;

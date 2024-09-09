@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class UIMgr : MonoBehaviour
 {
@@ -30,7 +28,9 @@ public class UIMgr : MonoBehaviour
             currentPanel.State = PanelState.Opening;
             UIRoot.Instance.SetLevelOfPanel(level, currentPanel);
             SetDefaultSizeOfPanel(currentPanel);
+            obj.SetActive(false);
             currentPanel.Init();
+            obj.SetActive(true);
             currentPanel.Enter();
             currentPanel.Show();
         });
@@ -50,14 +50,22 @@ public class UIMgr : MonoBehaviour
         }
 
         panel.Hide();
+        panel.Transform.gameObject.SetActive(false);
+        panel.State = PanelState.Hide;
         hidedPanel.Add(panel.Info.panelType, panel);
     }
 
     public T ShowPanel<T>() where T : class, IBasePanel
     {
         hidedPanel.TryGetValue(typeof(T), out var panel);
-        var originalPanel = panel as T;
-        return originalPanel;
+        if (panel is T originalPanel)
+        {
+            originalPanel.Transform.gameObject.SetActive(true);
+            originalPanel.State = PanelState.Opening;
+            return originalPanel;
+        }
+
+        return null;
     }
 
     public void ClosePanel()
@@ -69,6 +77,7 @@ public class UIMgr : MonoBehaviour
             currentPanel = panelStack.Peek();
             currentPanel.Resume();
         }
+
         Destroy(panel.Transform.gameObject);
     }
 
@@ -99,12 +108,19 @@ public class UIMgr : MonoBehaviour
     {
         var panelRectTrans = panel.Transform as RectTransform;
 
-        panelRectTrans.offsetMin = Vector2.zero;
-        panelRectTrans.offsetMax = Vector2.zero;
-        panelRectTrans.anchoredPosition3D = Vector3.zero;
-        panelRectTrans.anchorMin = Vector2.zero;
-        panelRectTrans.anchorMax = Vector2.one;
+        if (panelRectTrans != null)
+        {
+            panelRectTrans.offsetMin = Vector2.zero;
+            panelRectTrans.offsetMax = Vector2.zero;
+            panelRectTrans.anchoredPosition3D = Vector3.zero;
+            panelRectTrans.anchorMin = Vector2.zero;
+            panelRectTrans.anchorMax = Vector2.one;
 
-        panelRectTrans.localScale = Vector3.one;
+            panelRectTrans.localScale = Vector3.one;
+        }
+        else
+        {
+            Debug.Log("panel.Transform is null, please check it!");
+        }
     }
 }

@@ -5,18 +5,15 @@ namespace Framework.Farm
     public class PlayerController : ProjectCtrler
     {
         public float Speed;
-        public SlotsUIManager SlotsUIManager;
 
-        private IPlayerModel _playerModel;
-        private IInventorySystem _inventorySystem;
         private float h, v;
         private Transform mainCam;
+
+        private bool isOpenBackPack = false;
 
         private void Start()
         {
             mainCam = Camera.main.transform;
-            _playerModel = this.GetModel<IPlayerModel>();
-            _inventorySystem = this.GetSystem<IInventorySystem>();
         }
 
         private void Update()
@@ -26,11 +23,24 @@ namespace Framework.Farm
 
             Vector3 temp = h * mainCam.right + v * mainCam.forward;
             transform.position += temp * Speed * Time.deltaTime;
-        }
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                if (!isOpenBackPack)
+                {
+                    UIKit.OpenPanel("BackPackPanel");
+                    isOpenBackPack = true;
+                }
+                else
+                {
+                    UIKit.ClosePanel();
+                    isOpenBackPack = false;
+                }
+            }
 
-        public void Save()
-        {
-            this.GetSystem<ISaveSystem>().Save();
+            if (Input.GetKeyDown(KeyCode.F5))
+            {
+                this.GetSystem<ISaveSystem>().Save();
+            }
         }
     }
 }

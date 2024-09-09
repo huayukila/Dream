@@ -62,16 +62,16 @@ namespace Framework.Farm
             if (!mDraging)
                 return;
             GameObject pointingObj = eventData.pointerCurrentRaycast.gameObject;
+            var targetSlotUI = pointingObj.GetComponent<SlotUI>();
             if (pointingObj != null)
             {
                 if (pointingObj.CompareTag("Slot"))
                 {
-                    var uiSlot = pointingObj.GetComponent<SlotUI>();
-                    this.GetSystem<IInventorySystem>().DragItemToSlot(this, uiSlot);
-                    FindObjectOfType<SlotsUIManager>().UpdateSlots();
+                    this.GetSystem<IInventorySystem>().DragItemToSlot(this, targetSlotUI);
+                    UpdateSlotUI();
+                    targetSlotUI.UpdateSlotUI();
                 }
             }
-
             slotObj.transform.position = prePos;
             prePos = Vector3.zero;
             slotImg.raycastTarget = true;

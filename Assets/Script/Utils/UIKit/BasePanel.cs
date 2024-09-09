@@ -36,12 +36,7 @@ public abstract class BasePanel : ProjectCtrler, IBasePanel
     public Transform Transform => transform;
     public UIInfo Info { get; set; }
     public PanelState State { get; set; }
-
-    private void Awake()
-    {
-        // Transform = GetComponent<RectTransform>();
-    }
-
+    
     void IBasePanel.Enter()
     {
         OnEnter();

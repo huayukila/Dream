@@ -6,7 +6,10 @@ namespace Framework.Farm
         {
             RegisterModel<ISaveDataModel>(new SaveDataModel());
             RegisterModel<IItemConfigModel>(new ItemConfigModel());
+            RegisterModel<IInventoryModel>(new InventoryModel());
             RegisterModel<IPlayerModel>(new PlayerModel());
+
+            RegisterSystem<ITimeSystem>(new TimeSystem());
             RegisterSystem<ISaveSystem>(new SaveSystem());
             RegisterSystem<IInventorySystem>(new InventorySystem());
         }

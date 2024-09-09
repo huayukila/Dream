@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -61,11 +62,12 @@ namespace Framework.Farm
             var playerModel = this.GetModel<IPlayerModel>();
             var playerData = new PlayerData()
             {
+                BackPackID = playerModel.BackPack.ID.ToString(),
                 FoodValue = playerModel.FoodValue,
                 WaterValue = playerModel.WaterValue
             };
 
-            var inventorySystem = this.GetSystem<IInventorySystem>();
+            var inventorySystem = this.GetModel<IInventoryModel>();
 
             List<StorageUnitData> unitDatas = new List<StorageUnitData>();
 
@@ -94,7 +96,7 @@ namespace Framework.Farm
 
                 unitDatas.Add(new StorageUnitData()
                 {
-                    index = unit.Index,
+                    id = unit.ID.ToString(),
                     size = unit.UnitSize,
                     slots = slotData
                 });
@@ -111,8 +113,7 @@ namespace Framework.Farm
 
             var path = _saveDataPath + saveDataID + ".json";
             File.WriteAllText(path, saveDataJson);
-
-            _saveDataModel.SaveDataInfos.Add(saveDataID, new SaveDataInfo()
+            _saveDataModel.SaveDataInfos.TryAdd(saveDataID, new SaveDataInfo()
             {
                 Path = path
             });
@@ -127,20 +128,28 @@ namespace Framework.Farm
 
             var saveData = JsonUtility.FromJson<SaveData>(saveDataJson);
 
-            this.GetSystem<IInventorySystem>().LoadUnitFromSaveData(saveData.StorageUnitDatas);
+            Dictionary<Guid, StorageUnitData> tempDic = new Dictionary<Guid, StorageUnitData>();
+            foreach (var data in saveData.StorageUnitDatas)
+            {
+                tempDic.Add(Guid.Parse(data.id), data);
+            }
+
+            this.GetSystem<IInventorySystem>().LoadUnitFromSaveData(tempDic);
             HandleLoadPlayerData(saveData.PlayerData);
         }
 
         public void CreateNewSaveData(int index = 0)
         {
+            string playerBackPackID = Guid.NewGuid().ToString();
             var playerData = new PlayerData()
             {
+                BackPackID = playerBackPackID,
                 FoodValue = GLOBAL.MAX_FOOD_VALUE,
                 WaterValue = GLOBAL.MAX_WATER_VALUE
             };
             var storageUnitsData = new StorageUnitData()
             {
-                index = 0,
+                id = playerBackPackID,
                 size = GLOBAL.DEFAULT_BACKPACK_SIZE,
                 slots = new List<SlotData>(GLOBAL.DEFAULT_BACKPACK_SIZE) { },
             };
@@ -178,6 +187,8 @@ namespace Framework.Farm
         void HandleLoadPlayerData(PlayerData data)
         {
             var playerModel = this.GetModel<IPlayerModel>();
+            var id = Guid.Parse(data.BackPackID);
+            playerModel.SetBackPack(this.GetModel<IInventoryModel>()._unitsGroup[id]);
             playerModel.FoodValue = data.FoodValue;
             playerModel.WaterValue = data.WaterValue;
         }

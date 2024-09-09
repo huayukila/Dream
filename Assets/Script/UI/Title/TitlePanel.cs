@@ -17,6 +17,7 @@ namespace Framework.Farm
 
         protected override void OnEnter()
         {
+            
         }
 
         protected override void OnExit()

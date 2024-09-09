@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -18,15 +19,13 @@ namespace Framework.Farm
 
         void DragItemToSlot(SlotUI handlingSlotUI, SlotUI targetSlotUI);
 
-        void LoadUnitFromSaveData(List<StorageUnitData> datas);
-
-        Dictionary<int, InventoryUnit> _unitsGroup { get; }
+        void LoadUnitFromSaveData(Dictionary<Guid, StorageUnitData> dataDic);
     }
 
     public class InventorySystem : AbstractSystem, IInventorySystem
     {
         private IItemConfigModel _itemConfigModel;
-        public Dictionary<int, InventoryUnit> _unitsGroup { get; } = new Dictionary<int, InventoryUnit>() { };
+        private IInventoryModel _inventoryModel;
         List<ISlot> canStackSlots = new List<ISlot>();
 
         protected override void OnInit()
@@ -34,6 +33,7 @@ namespace Framework.Farm
             {
                 //セーフデータから初期化
                 //todo...
+                _inventoryModel = this.GetModel<IInventoryModel>();
                 _itemConfigModel = this.GetModel<IItemConfigModel>();
             }
         }
@@ -151,23 +151,22 @@ namespace Framework.Farm
             UpdateUnitNullSlotsList(handlingSlotUI.Data.ParentInventoryUnit);
         }
 
-        public void LoadUnitFromSaveData(List<StorageUnitData> datas)
+        public void LoadUnitFromSaveData(Dictionary<Guid, StorageUnitData> dataDic)
         {
-            foreach (var data in datas)
+            var model = this.GetModel<IInventoryModel>();
+            foreach (var data in dataDic)
             {
-                var unit = InventoryUnit.CreateStorageUnit(data.size);
-                for (int i = 0; i < data.size; i++)
+                var unit = InventoryUnit.CreateStorageUnitByID(data.Value.size, Guid.Parse(data.Value.id));
+                for (int i = 0; i < data.Value.size; i++)
                 {
                     var slot = unit.Slots[i];
-                    var slotData = data.slots[i];
+                    var slotData = data.Value.slots[i];
                     CreateItemByIndex(unit, _itemConfigModel.GetConfigByID(slotData.id), slotData.amount, i);
                 }
 
                 UpdateUnitNullSlotsList(unit);
-                _unitsGroup.Add(data.index, unit);
+                _inventoryModel._unitsGroup.Add(data.Key, unit);
             }
-
-            this.GetModel<IPlayerModel>().InitBackPack(_unitsGroup[1]);
         }
 
         #region 内部用

@@ -10,7 +10,7 @@ namespace Framework.Farm
         int FoodValue { get; set; }
 
         int WaterValue { get; set; }
-        void InitBackPack(InventoryUnit unit);
+        void SetBackPack(InventoryUnit unit);
     }
 
     public class PlayerModel : AbstractModel, IPlayerModel
@@ -19,7 +19,7 @@ namespace Framework.Farm
         public int FoodValue { get; set; }
         public int WaterValue { get; set; }
 
-        public void InitBackPack(InventoryUnit unit)
+        public void SetBackPack(InventoryUnit unit)
         {
             BackPack = unit;
         }

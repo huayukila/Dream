@@ -23,15 +23,9 @@ namespace Framework.Farm
 
         private void Start()
         {
-            this.RegisterEvent<BoughtItemEvent>(e => { UpdateSlots(); }).UnregisterWhenGameObjectDestroyed(gameObject);
+            
         }
 
-        public void UpdateSlots()
-        {
-            for (int i = 0; i < _playerModel.BackPack.Slots.Count; ++i)
-            {
-                slotUIs[i].UpdateSlotUI();
-            }
-        }
+
     }
 }

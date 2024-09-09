@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public struct InventoryUpdateInfo
 {
@@ -16,7 +16,7 @@ public struct InventoryUpdateResult
 
 public interface IInventoryUnit
 {
-    int Index { get; }
+    Guid ID { get; }
     int UnitSize { get; }
     List<ISlot> Slots { get; }
     List<ISlot> NullSlots { get; }
@@ -24,30 +24,36 @@ public interface IInventoryUnit
 
 public class InventoryUnit : IInventoryUnit
 {
-    private static int INDEX = 1;
-    public int Index { get; private set; }
+    public Guid ID { get; private set; }
     public int UnitSize { get; }
     public List<ISlot> Slots { get; }
     public List<ISlot> NullSlots { get; set; }
 
-    public static InventoryUnit CreateStorageUnit(int maxSize, out int index)
+    public static InventoryUnit CreateStorageUnit(int maxSize, out Guid id)
     {
-        index = INDEX;
+        id = Guid.NewGuid();
         var unit = new InventoryUnit(maxSize)
         {
-            Index = index
+            ID = id
         };
-        INDEX++;
         return unit;
     }
 
+    public static InventoryUnit CreateStorageUnitByID(int maxSize, Guid id)
+    {
+        var unit = new InventoryUnit(maxSize)
+        {
+            ID = id
+        };
+        return unit;
+    }
+    
     public static InventoryUnit CreateStorageUnit(int maxSize)
     {
         var unit = new InventoryUnit(maxSize)
         {
-            Index = INDEX
+            ID = Guid.NewGuid()
         };
-        INDEX++;
         return unit;
     }
 
@@ -60,6 +66,7 @@ public class InventoryUnit : IInventoryUnit
         NullSlots = new List<ISlot>();
         UnitSize = maxSize;
         Slots = new List<ISlot>();
+
         for (int i = 0; i < maxSize; i++)
         {
             Slots.Add(new Slot(this));

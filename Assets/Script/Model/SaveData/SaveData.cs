@@ -14,6 +14,7 @@ namespace Framework.Farm
     [Serializable]
     public struct PlayerData
     {
+        public string BackPackID;
         public int FoodValue;
         public int WaterValue;
     }
@@ -21,7 +22,7 @@ namespace Framework.Farm
     [Serializable]
     public struct StorageUnitData
     {
-        public int index;
+        public string id;
         public int size;
         public List<SlotData> slots;
     }
