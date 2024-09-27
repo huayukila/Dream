@@ -71,6 +71,11 @@ public class UIMgr : MonoBehaviour
     public void ClosePanel()
     {
         var panel = PopPanel();
+        ClosePanel(panel);
+    }
+
+    public void ClosePanel(IBasePanel panel)
+    {
         panel.Exit();
         if (panelStack.Count > 0)
         {
@@ -79,6 +84,26 @@ public class UIMgr : MonoBehaviour
         }
 
         Destroy(panel.Transform.gameObject);
+    }
+
+    public void CloseAllPanel(bool isClearHidePanel = false)
+    {
+        int count = panelStack.Count;
+        for (int i = 0; i < count; i++)
+        {
+            ClosePanel();
+        }
+
+        panelStack.Clear();
+        if (isClearHidePanel)
+        {
+            foreach (var panel in hidedPanel.Values)
+            {
+                ClosePanel(panel);
+            }
+
+            hidedPanel.Clear();
+        }
     }
 
     void PushPanel(IBasePanel panel)

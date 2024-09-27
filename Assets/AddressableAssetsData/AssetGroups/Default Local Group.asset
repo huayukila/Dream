@@ -27,6 +27,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d53947d486b45964d874460e7f1536c8
+    m_Address: Assets/Prefab/UI/SaveDataPanel.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 7e9234733f9ffc842bb2da5ab2dc3a03, type: 2}
   m_SchemaSet:

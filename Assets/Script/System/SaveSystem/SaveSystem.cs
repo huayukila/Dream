@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,7 +23,7 @@ namespace Framework.Farm
     {
         private ISaveDataModel _saveDataModel;
 
-
+        private Regex saveFileRegex = new Regex(@"SaveData(\d+)\.json");
         private static readonly string saveData = "SaveData";
         private static readonly string gameSetting = "GameSetting";
 #if !UNITY_EDITOR
@@ -39,11 +41,13 @@ namespace Framework.Farm
         {
             _saveDataModel = this.GetModel<ISaveDataModel>();
 
+            //if no savedata folder 
             if (!Directory.Exists(_rootPath))
             {
                 Directory.CreateDirectory(_rootPath);
             }
 
+            //if no gamesetting file
             if (!File.Exists(_gameSettingPath + ".json"))
             {
                 _gameSettingData = new GameSettingData();
@@ -54,6 +58,35 @@ namespace Framework.Farm
             {
                 string gameSettingJson = File.ReadAllText(_gameSettingPath + ".json");
                 _gameSettingData = JsonUtility.FromJson<GameSettingData>(gameSettingJson);
+            }
+
+            string[] saveFiles = Directory.GetFiles(_rootPath, "SaveData*.json");
+
+            foreach (var file in saveFiles)
+            {
+                string fileName = Path.GetFileName(file);
+
+                Match match = saveFileRegex.Match(fileName);
+
+                if (match.Success)
+                {
+                    int saveNumber;
+                    if (int.TryParse(match.Groups[1].Value, out saveNumber)) ;
+                    {
+                        string path = _saveDataPath + saveNumber + ".json";
+
+                        var saveDataJson = File.ReadAllText(path);
+
+                        var saveData = JsonUtility.FromJson<SaveData>(saveDataJson);
+
+                        _saveDataModel.SaveDataInfos.Add(saveNumber, new SaveDataInfo()
+                        {
+                            RealTime = saveData.RealTime,
+                            GameTime = saveData.GameTime,
+                            Path = path
+                        });
+                    }
+                }
             }
         }
 
@@ -105,6 +138,8 @@ namespace Framework.Farm
             var saveData = new SaveData()
             {
                 ID = saveDataID,
+                RealTime = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+                GameTime = "0:00",
                 PlayerData = playerData,
                 StorageUnitDatas = unitDatas
             };
@@ -115,7 +150,9 @@ namespace Framework.Farm
             File.WriteAllText(path, saveDataJson);
             _saveDataModel.SaveDataInfos.TryAdd(saveDataID, new SaveDataInfo()
             {
-                Path = path
+                Path = path,
+                GameTime = "0:00", //todo... need read from other side
+                RealTime = DateTime.Now.ToString(CultureInfo.CurrentCulture)
             });
         }
 
@@ -162,6 +199,8 @@ namespace Framework.Farm
             var saveData = new SaveData()
             {
                 ID = index,
+                RealTime = DateTime.Now.ToString(CultureInfo.CurrentCulture),
+                GameTime = "0:00",
                 PlayerData = playerData,
                 StorageUnitDatas = new List<StorageUnitData>() { storageUnitsData }
             };
@@ -173,7 +212,9 @@ namespace Framework.Farm
 
             _saveDataModel.SaveDataInfos.Add(index, new SaveDataInfo()
             {
-                Path = path
+                Path = path,
+                RealTime = saveData.RealTime,
+                GameTime = saveData.GameTime
             });
         }
 

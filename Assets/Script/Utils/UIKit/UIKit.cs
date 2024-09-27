@@ -21,4 +21,9 @@ public class UIKit
     {
         return _mgr.GetCurrentPanel();
     }
+
+    public static void CloseAllPanel(bool isClearHidePanel = false)
+    {
+        _mgr.CloseAllPanel(isClearHidePanel);
+    }
 }

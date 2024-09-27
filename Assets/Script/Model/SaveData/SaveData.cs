@@ -7,6 +7,8 @@ namespace Framework.Farm
     public class SaveData
     {
         public int ID;
+        public string RealTime;
+        public string GameTime;
         public PlayerData PlayerData;
         public List<StorageUnitData> StorageUnitDatas;
     }

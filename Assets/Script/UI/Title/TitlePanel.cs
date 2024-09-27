@@ -37,9 +37,7 @@ namespace Framework.Farm
             newGameBtn.onClick.AddListener(() => { this.GetSystem<ISaveSystem>().CreateNewSaveData(); });
             loadBtn.onClick.AddListener(() =>
             {
-                this.GetSystem<ISaveSystem>().Load(0);
-                SceneManager.LoadScene("Game");
-                UIKit.ClosePanel();
+                UIKit.OpenPanel("SaveDataPanel");
             });
         }
     }
