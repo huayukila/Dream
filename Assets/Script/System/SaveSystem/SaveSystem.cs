@@ -12,7 +12,7 @@ namespace Framework.Farm
     {
         void Save(int saveDataID = 0);
 
-        void Load(int saveDataID = 0);
+        bool Load(int saveDataID = 0);
 
         void CreateNewSaveData(int index = 0);
 
@@ -83,7 +83,6 @@ namespace Framework.Farm
                         {
                             RealTime = saveData.RealTime,
                             GameTime = saveData.GameTime,
-                            Path = path
                         });
                     }
                 }
@@ -150,18 +149,31 @@ namespace Framework.Farm
             File.WriteAllText(path, saveDataJson);
             _saveDataModel.SaveDataInfos.TryAdd(saveDataID, new SaveDataInfo()
             {
-                Path = path,
                 GameTime = "0:00", //todo... need read from other side
                 RealTime = DateTime.Now.ToString(CultureInfo.CurrentCulture)
             });
         }
 
 
-        public void Load(int saveDataID = 0)
+        public bool Load(int saveDataID = 0)
         {
             string path = _saveDataPath + saveDataID + ".json";
 
-            var saveDataJson = File.ReadAllText(path);
+            string saveDataJson;
+            try
+            {
+                saveDataJson = File.ReadAllText(path);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning(e);
+                throw;
+            }
+            // if (saveDataJson.Equals(string.Empty))
+            // {
+            //     Debug.Log("can not find SaveData:" + saveDataID);
+            //     return false;
+            // }
 
             var saveData = JsonUtility.FromJson<SaveData>(saveDataJson);
 
@@ -173,6 +185,7 @@ namespace Framework.Farm
 
             this.GetSystem<IInventorySystem>().LoadUnitFromSaveData(tempDic);
             HandleLoadPlayerData(saveData.PlayerData);
+            return true;
         }
 
         public void CreateNewSaveData(int index = 0)
@@ -212,7 +225,6 @@ namespace Framework.Farm
 
             _saveDataModel.SaveDataInfos.Add(index, new SaveDataInfo()
             {
-                Path = path,
                 RealTime = saveData.RealTime,
                 GameTime = saveData.GameTime
             });

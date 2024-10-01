@@ -17,7 +17,6 @@ namespace Framework.Farm
 
         protected override void OnEnter()
         {
-            
         }
 
         protected override void OnExit()
@@ -34,10 +33,13 @@ namespace Framework.Farm
 
         protected override void OnInit()
         {
-            newGameBtn.onClick.AddListener(() => { this.GetSystem<ISaveSystem>().CreateNewSaveData(); });
+            newGameBtn.onClick.AddListener(() =>
+            {
+                UIKit.OpenPanel("SaveDataPanel", new SaveOrLoadStateInfo() { state = SaveDataPanelState.New });
+            });
             loadBtn.onClick.AddListener(() =>
             {
-                UIKit.OpenPanel("SaveDataPanel");
+                UIKit.OpenPanel("SaveDataPanel", new SaveOrLoadStateInfo() { state = SaveDataPanelState.Load });
             });
         }
     }

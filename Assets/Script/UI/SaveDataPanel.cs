@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,6 +5,19 @@ using UnityEngine.UI;
 
 namespace Framework.Farm
 {
+    public enum SaveDataPanelState
+    {
+        Non,
+        Save,
+        Load,
+        New
+    }
+
+    public class SaveOrLoadStateInfo : UIData
+    {
+        public SaveDataPanelState state;
+    }
+
     public class SaveDataPanel : BasePanel
     {
         public Button CloseBtn;
@@ -15,27 +27,64 @@ namespace Framework.Farm
         private List<SaveDataUI> _saveDataUis;
         private ISaveSystem _saveSystem;
 
-        void ReLoadSaveDataInfo()
+        void ReLoadSlotInfo()
         {
+            var saveDataModel = this.GetModel<ISaveDataModel>();
+            foreach (var button in SaveDatasBtn)
+            {
+                button.onClick.RemoveAllListeners();
+                var slotUI = button.GetComponent<SaveDataUI>();
+                slotUI.isHadSD = false;
+                if (saveDataModel.SaveDataInfos.TryGetValue(slotUI.SlotID, out SaveDataInfo value))
+                {
+                    slotUI.Init(value);
+                }
+
+                button.onClick.AddListener(() => { HandleBtnClick(slotUI.SlotID); });
+            }
+
             foreach (var info in this.GetModel<ISaveDataModel>().SaveDataInfos)
             {
                 var buttonUI = _saveDataUis[info.Key];
-                buttonUI.Init(info.Key, info.Value);
-                buttonUI.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    this.GetSystem<ISaveSystem>().Load(info.Key);
+                var btn = buttonUI.GetComponent<Button>();
+                buttonUI.Init(info.Value);
+            }
+        }
 
-                    //todo... need fixed
-                    UIKit.CloseAllPanel(false);
-                    SceneManager.LoadScene("Game");
-                    //
-                });
+        void HandleBtnClick(int slotID)
+        {
+            switch ((Info.uiData as SaveOrLoadStateInfo).state)
+            {
+                case SaveDataPanelState.Load:
+                    if (this.GetSystem<ISaveSystem>().Load(slotID))
+                    {
+                        UIKit.CloseAllPanel(false);
+                        SceneManager.LoadScene("Game");
+                    }
+
+                    break;
+                case SaveDataPanelState.Save:
+
+                    if (_saveDataUis[slotID].isHadSD)
+                    {
+                        Debug.Log("would you like to overwrite this saveData?");
+                    }
+                    else
+                    {
+                        this.GetSystem<ISaveSystem>().Save(slotID);
+                    }
+
+                    break;
+                case SaveDataPanelState.New:
+                    this.GetSystem<ISaveSystem>().CreateNewSaveData(slotID);
+                    UIKit.ClosePanel();
+                    break;
             }
         }
 
         protected override void OnEnter()
         {
-            ReLoadSaveDataInfo();
+            ReLoadSlotInfo();
         }
 
         protected override void OnExit()
@@ -63,12 +112,8 @@ namespace Framework.Farm
             for (int i = 0; i < SaveDatasBtn.Length; i++)
             {
                 var ui = SaveDatasBtn[i].GetComponent<SaveDataUI>();
-                ui.ID = i;
+                ui.SlotID = i;
                 _saveDataUis.Add(ui);
-            }
-            foreach (var button in SaveDatasBtn)
-            {
-                
             }
         }
     }

@@ -4,16 +4,19 @@ using UnityEngine.UI;
 
 public class SaveDataUI : MonoBehaviour
 {
-    public int ID;
+    public int SlotID;
     public Text numberTxt;
     public Text gameTimeTxt;
     public Text realTimeTxt;
 
-    public void Init(int id, SaveDataInfo info)
-    {
-        numberTxt.text = id.ToString();
+    //is it had saveData
+    public bool isHadSD = false;
 
+    public void Init(SaveDataInfo info)
+    {
+        numberTxt.text = SlotID.ToString();
         gameTimeTxt.text = info.GameTime;
         realTimeTxt.text = info.RealTime;
+        isHadSD = true;
     }
 }

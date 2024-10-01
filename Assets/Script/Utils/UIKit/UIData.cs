@@ -2,6 +2,7 @@ public interface IUIData
 {
     
 }
-public class UIData: IUIData
+public abstract class UIData: IUIData
 {
+    
 }

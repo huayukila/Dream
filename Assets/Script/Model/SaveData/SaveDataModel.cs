@@ -7,7 +7,6 @@ namespace Framework.Farm
     public struct SaveDataInfo
     {
         //sprite
-        public string Path;
         public string RealTime;
         public string GameTime;
     }

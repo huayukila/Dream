@@ -28,10 +28,10 @@ public class UIMgr : MonoBehaviour
             currentPanel.State = PanelState.Opening;
             UIRoot.Instance.SetLevelOfPanel(level, currentPanel);
             SetDefaultSizeOfPanel(currentPanel);
-            obj.SetActive(false);
             currentPanel.Init();
-            obj.SetActive(true);
+            obj.SetActive(false);
             currentPanel.Enter();
+            obj.SetActive(true);
             currentPanel.Show();
         });
     }
